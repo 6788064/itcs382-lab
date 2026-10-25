@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ParcelService service = new ParcelService();
+        ParcelService service = new ParcelService(new ParcelCsvFile("parcels.csv"));
         try (Scanner in = new Scanner(System.in)) {
             System.out.println("Commands: store <code> <studentId> <size 1-3>, pickup <code> <days>, list, staff, quit");
             while (in.hasNextLine()) {

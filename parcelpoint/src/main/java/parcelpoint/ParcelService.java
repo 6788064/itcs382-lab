@@ -1,16 +1,15 @@
 package parcelpoint;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ParcelService {
     private List<Locker> lockers = new ArrayList<>();
     private List<Parcel> parcels = new ArrayList<>();
+    private final ParcelCsvFile file;
 
-    public ParcelService() {
+    public ParcelService(ParcelCsvFile file) {
+        this.file = file;
         lockers.add(new Locker(1, ParcelSize.SMALL));
         lockers.add(new Locker(2, ParcelSize.MEDIUM));
         lockers.add(new Locker(3, ParcelSize.LARGE));
@@ -28,7 +27,7 @@ public class ParcelService {
                 parcels.add(parcel);
                 System.out.println("SMS to " + parcel.getStudentId() + ": parcel "
                         + parcel.getCode() + " is in locker " + locker.getNumber());
-                saveToFile();
+                file.save(parcels);
                 return locker;
             }
         }
@@ -41,7 +40,7 @@ public class ParcelService {
             if (parcel != null && parcel.getCode().equals(code)) {
                 locker.setParcel(null);
                 parcel.markPickedUp();
-                saveToFile();
+                file.save(parcels);
                 return fee(parcel, days);
             }
         }
@@ -62,16 +61,6 @@ public class ParcelService {
             } else if ("STORED".equals(parcel.getStatus())) {
                 System.out.println(parcel.getCode() + " is waiting");
             }
-        }
-    }
-
-    private void saveToFile() {
-        try (FileWriter writer = new FileWriter("parcels.csv")) {
-            for (Parcel parcel : parcels) {
-                writer.write(parcel.getCode() + "," + parcel.getStatus() + "\n");
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException("Cannot save parcels.csv", e);
         }
     }
 }
